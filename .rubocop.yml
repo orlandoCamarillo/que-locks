@@ -3,7 +3,7 @@ AllCops:
     - "vendor/**/*"
     - "node_modules/**/*"
     - "test/scratch/**/*"
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 3.2
   NewCops: disable
   SuggestExtensions: false
 
