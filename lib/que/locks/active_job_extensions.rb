@@ -25,7 +25,13 @@ module Que::Locks
         job_options[:queue] = job.queue_name
       end
 
-      que_job = ExclusiveJobWrapper.enqueue job.serialize, job_options: job_options
+      # Adding support for que 2.x.x
+      if Gem::Version.new(Que::VERSION) >= Gem::Version.new("2.0")
+        job_options[:queue] ||= :default
+        que_job =ExclusiveJobWrapper.enqueue job.serialize, **job_options
+      else
+        que_job = ExclusiveJobWrapper.enqueue job.serialize, job_options: job_options
+      end
       if que_job && job.respond_to?(:provider_job_id=)
         job.provider_job_id = que_job.attrs["job_id"]
       end
