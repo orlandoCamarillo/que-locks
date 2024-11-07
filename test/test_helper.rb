@@ -43,18 +43,18 @@ class Minitest::Test
     sleep_until?(*args, &block) || raise("sleep_until timeout reached")
   end
 
-  def sleep_until?(timeout: SLEEP_UNTIL_TIMEOUT)
-    deadline = Time.now + timeout
-    loop do
-      if (result = yield)
-        return result
+  def sleep_until?(timeout)
+    begin
+      Timeout.timeout(timeout) do
+        loop do
+          if (result = yield)
+            return result
+          end
+          sleep 0.01
+        end
       end
-
-      if Time.now > deadline
-        return false
-      end
-
-      sleep 0.01
+    rescue Timeout::Error
+      return false
     end
   end
 
@@ -65,6 +65,7 @@ class Minitest::Test
     jobs = ActiveRecord::Base.connection.execute("SELECT * FROM que_jobs;").to_a.map do |job|
       job.symbolize_keys!
       job[:args] = JSON.parse(job[:args])
+      job[:kwargs] = JSON.parse(job[:kwargs]) if job[:kwargs]
       job
     end
 
@@ -74,7 +75,7 @@ class Minitest::Test
     job_buffer.push(*jobs)
     Que::Worker.new(job_buffer: job_buffer, result_queue: result_queue)
 
-    sleep_until timeout: 10 do
+    sleep_until 10 do
       finished_job_ids(result_queue) == job_ids
     end
   end

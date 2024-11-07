@@ -126,7 +126,6 @@ DEPENDENCIES
   pg
   que-locks!
   railties
-  rake (~> 13.0)
   rubocop
   rubocop-performance
   rufo

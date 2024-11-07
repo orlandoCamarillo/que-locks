@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         postgres_version: [9, 10, 11, 12]
-        ruby_version: ['2.5', '2.6', '3.3']
+        ruby_version: ['2.7', '3.3']
 
     services:
       postgres:
@@ -40,7 +40,13 @@ jobs:
           createdb que_locks
       - name: Build and test with Rake
         run: |
-          gem install bundler -v 2.3.26
+          if [[ "$(ruby -e 'print RUBY_VERSION')" < "3.0" ]]; then
+            echo "Ruby version is less than 3.0"
+            gem install bundler -v 2.3.18
+          else
+            echo "Ruby version is 3.0 or greater"
+            gem install bundler 
+          fi
           bundle install --jobs 4 --retry 3
           bundle exec rake
   lint:
@@ -61,8 +67,9 @@ jobs:
           sudo apt-get -yqq install libpq-dev postgresql-client
       - name: Bundle
         run: |
-          gem install bundler
+          gem install bundler -v 2.4.22
           bundle install --jobs 4 --retry 3
+
       - name: Check code with rubocop
         run: |
           bundle exec rubocop

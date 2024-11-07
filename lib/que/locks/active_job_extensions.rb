@@ -28,7 +28,7 @@ module Que::Locks
       # Adding support for que 2.x.x
       if Gem::Version.new(Que::VERSION) >= Gem::Version.new("2.0")
         job_options[:queue] ||= :default
-        que_job =ExclusiveJobWrapper.enqueue job.serialize, **job_options
+        que_job = ExclusiveJobWrapper.enqueue job.serialize, **job_options
       else
         que_job = ExclusiveJobWrapper.enqueue job.serialize, job_options: job_options
       end

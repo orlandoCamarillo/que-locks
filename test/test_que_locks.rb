@@ -287,7 +287,8 @@ class TestQueLocks < Minitest::Test
       assert_equal Que::Locks::ActiveJobExtensions::ExclusiveJobWrapper, klass
       assert_equal 1, args.length
       assert_equal "TestActiveJob", args.first["job_class"]
-      assert_equal [1, { "unrelated" => { "_aj_serialized" => "ActiveJob::Serializers::SymbolSerializer", "value" => "qux" }, "_aj_symbol_keys" => ["unrelated"] }], args.first["arguments"]
+
+      assert_equal [1, { "unrelated" => { "_aj_serialized" => "ActiveJob::Serializers::SymbolSerializer", "value" => "qux" }, "_aj_ruby2_keywords" => ["unrelated"] }], args.first["arguments"]
     end
 
     mock_lock = mock("lock")
